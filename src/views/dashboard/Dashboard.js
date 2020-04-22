@@ -5,6 +5,10 @@ import { LinearProgress } from '@material-ui/core';
 import { renderRoutes } from 'react-router-config';
 import Link from '@material-ui/core/Link';
 import { createMuiTheme, ThemeProvider, withStyles } from '@material-ui/core/styles';
+import { connect } from 'react-redux';
+import { login } from '../../actions/auth';
+import PropTypes from 'prop-types';
+import {Redirect} from 'react-router-dom';
 
 function Copyright() {
     return (
@@ -160,16 +164,33 @@ function Copyright() {
   
 
 export class Dashboard extends React.Component {
+  
+
   componentDidMount() {
+
     document.addEventListener('contextmenu', (e) => {
       e.preventDefault();
     });
   };
+  static propTypes = {
+    login: PropTypes.func.isRequired,
+    isAuthenticated: PropTypes.bool,
+    isLoading: PropTypes.bool,
+  };
     render() {
+            console.log(this.props)
             const { classes } = this.props;
             const { route } = this.props;
+            
+            if(this.props.isLoading){
+              return <h1>Loading.....</h1>
+            }
+              if (!this.props.isAuthenticated) {
+                return <Redirect to="/account/login" />;
+              }
 
         return (
+          
             <div>
                 <Header />
                 <Drawer />
@@ -188,5 +209,10 @@ export class Dashboard extends React.Component {
     }
 }
 
-export default withStyles(styles)(Dashboard);
+const mapStateToProps = (state) => ({
+  isAuthenticated: state.auth.isAuthenticated,
+  isLoading: state.auth.isLoading,
+});
+
+export default connect(mapStateToProps, { login })(withStyles(styles)(Dashboard));
 

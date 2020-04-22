@@ -4,6 +4,7 @@ import SignIn from './views/accounts/Login/Login';
 import SignUp, { Register } from './views/accounts/Register/Register';
 import Dashboard from './views/dashboard/Dashboard';
 import Error404 from './views/Error404/Error404';
+import PrivateRoute from './PrivateRoute';
 
 const routes = [
   {

@@ -14,6 +14,9 @@ import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { login } from '../../../actions/auth';
+import {Redirect} from 'react-router-dom';
 
 function Copyright() {
   return (
@@ -49,15 +52,35 @@ const useStyles = (theme) => ({
 });
 
 export class Login extends React.Component {
+    state = {
+      email: '',
+      password: ''
+    };
 
     static propTypes = {
       classes: PropTypes.object.isRequired,
+      login: PropTypes.func.isRequired,
+      isAuthenticated: PropTypes.bool,
     };
     
-
+    onSubmit = (e) => {
+      e.preventDefault();
+      this.props.login(this.state.email, this.state.password);
+    };
+  
+    onChange = (e) => this.setState({ [e.target.name]: e.target.value });
+    
+    componentDidMount(){
+      if (this.props.isAuthenticated) {
+        return <Redirect to="/" />;
+      }
+    }
     render() {
         const { classes } = this.props
-        console.log({classes});
+        const { email, password } = this.state;
+        if (this.props.isAuthenticated) {
+          return <Redirect to="/" />;
+        }
         return (
           <Container component="main" maxWidth="xs">
             <CssBaseline />
@@ -68,7 +91,7 @@ export class Login extends React.Component {
               <Typography component="h1" variant="h5">
                 Sign in
               </Typography>
-              <form className={classes.form} noValidate>
+              <form className={classes.form} onSubmit={this.onSubmit}>
                 <TextField
                   variant="outlined"
                   margin="normal"
@@ -79,6 +102,8 @@ export class Login extends React.Component {
                   name="email"
                   autoComplete="email"
                   autoFocus
+                  onChange={this.onChange}
+                  value={email}
                 />
                 <TextField
                   variant="outlined"
@@ -90,6 +115,8 @@ export class Login extends React.Component {
                   type="password"
                   id="password"
                   autoComplete="current-password"
+                  onChange={this.onChange}
+                  value={password}
                 />
                 <FormControlLabel
                   control={<Checkbox value="remember" color="primary" />}
@@ -121,4 +148,8 @@ export class Login extends React.Component {
     }
 }
 
-export default withStyles(useStyles)(Login);
+const mapStateToProps = (state) => ({
+  isAuthenticated: state.auth.isAuthenticated,
+});
+
+export default connect(mapStateToProps, { login })(withStyles(useStyles)(Login));

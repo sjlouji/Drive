@@ -7,9 +7,16 @@ import  routes from './Routes'
 import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
 import { renderRoutes } from 'react-router-config';
 import { createBrowserHistory } from 'history';
+import { loadUser } from './actions/auth';
+import PrivateRoute from './PrivateRoute';
+import { Dashboard } from './views/dashboard/Dashboard';
 
 
 export default class App extends React.Component {
+  componentDidMount(){
+    console.log("firsthere")
+    store.dispatch(loadUser());
+  }
   render() {
     const history = createBrowserHistory();
     return (

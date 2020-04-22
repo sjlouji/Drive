@@ -14,6 +14,9 @@ import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
+import { connect } from 'react-redux';
+import { Redirect } from 'react-router-dom';
+import { register } from '../../../actions/auth';
 
 function Copyright() {
   return (
@@ -55,95 +58,157 @@ export  class Register extends React.Component {
    useStyles : PropTypes.object.isRequired,
   };
   
+  state = {
+    first_name: '',
+    last_name: '',
+    email: '',
+    password: '',
+    password2: '',
+  };
+
+
+  static propTypes = {
+    register: PropTypes.func.isRequired,
+    isAuthenticated: PropTypes.bool,
+  };
+
+  onSubmit = (e) => {
+    e.preventDefault();
+    const { first_name, last_name, email, password, password2 } = this.state;
+    if (password !== password2) {
+      console.log('Passwords do not match');
+    } else {
+      const newUser = {
+        email,
+        password,
+        first_name,
+        last_name,
+      };
+      console.log(newUser);
+      this.props.register(newUser);
+    }
+  };
+
+  onChange = (e) => this.setState({ [e.target.name]: e.target.value });
 
   render() {
     const { classes } = this.props;
+    if (this.props.isAuthenticated) {
+      return <Redirect to="/" />;
+    }
+    const { first_name,last_name, email, password, password2 } = this.state;
 
     return (
       <Container component="main" maxWidth="xs">
-        <CssBaseline />
-        <div className={classes.paper}>
-          <Avatar className={classes.avatar}>
-            <LockOutlinedIcon />
-          </Avatar>
-          <Typography component="h1" variant="h5">
-            Sign up
-          </Typography>
-          <form className={classes.form} noValidate>
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  autoComplete="fname"
-                  name="firstName"
-                  variant="outlined"
-                  required
-                  fullWidth
-                  id="firstName"
-                  label="First Name"
-                  autoFocus
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  variant="outlined"
-                  required
-                  fullWidth
-                  id="lastName"
-                  label="Last Name"
-                  name="lastName"
-                  autoComplete="lname"
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  variant="outlined"
-                  required
-                  fullWidth
-                  id="email"
-                  label="Email Address"
-                  name="email"
-                  autoComplete="email"
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  variant="outlined"
-                  required
-                  fullWidth
-                  name="password"
-                  label="Password"
-                  type="password"
-                  id="password"
-                  autoComplete="current-password"
-                />
-              </Grid>
-            
+      <CssBaseline />
+      <div className={classes.paper}>
+        <Avatar className='avatar'>
+          <LockOutlinedIcon />
+        </Avatar>
+        <Typography component="h1" variant="h5">
+          Sign up
+        </Typography>
+        <form className={classes.form} onSubmit={this.onSubmit}>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                autoComplete="fname"
+                name="first_name"
+                variant="outlined"
+                required
+                fullWidth
+                id="first_name"
+                label="First Name"
+                onChange={this.onChange}
+                autoFocus
+                value={first_name}
+              />
             </Grid>
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              color="primary"
-              className={classes.submit}
-            >
-              Sign Up
-            </Button>
-            <Grid container justify="center">
-              <Grid item>
-                <Link href="/account/login" variant="body2">
-                  Already have an account? Sign in
-                </Link>
-              </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                variant="outlined"
+                required
+                fullWidth
+                id="last_name"
+                label="Last Name"
+                name="last_name"
+                onChange={this.onChange}
+                autoComplete="lname"
+                value={last_name}
+              />
             </Grid>
-          </form>
-        </div>
-        <Box mt={5}>
-          <Copyright />
-        </Box>
-      </Container>
+            <Grid item xs={12}>
+              <TextField
+                variant="outlined"
+                required
+                fullWidth
+                id="email"
+                label="Email Address"
+                name="email"
+                onChange={this.onChange}
+                autoComplete="email"
+                value={email}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                variant="outlined"
+                required
+                fullWidth
+                name="password"
+                label="Password"
+                type="password"
+                onChange={this.onChange}
+                id="password"
+                autoComplete="current-password"
+                value={password}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                variant="outlined"
+                required
+                fullWidth
+                name="password2"
+                label="Confirm Password"
+                type="password"
+                onChange={this.onChange}
+                id="password2"
+                autoComplete="current-password"
+                onChangeCapture={this.onChange}
+                value={password2}
+              />
+            </Grid>
+          </Grid>
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            color="primary"
+            className={classes.submit}
+          >
+            Sign Up
+          </Button>
+          <Grid style={{ textAlign: "center"  }}>
+          <Grid item style={{ marginTop: '30px' }} >
+            <Link href='/accounts/login' variant="body2">
+              {"Already have an account? Sign in"}
+            </Link>
+          </Grid>
+          </Grid>
+        </form>
+      </div>
+      <Box mt={5}>
+        <Copyright />
+      </Box>
+    </Container>
     );
   }
 }
 
+const  mapStateToProps = (state)  =>  ({
+  isAuthenticated: state.auth.isAuthenticated,
+})
 
-export default withStyles(useStyles)(Register)
+
+export default  connect(mapStateToProps, { register })(withStyles(useStyles)(Register));

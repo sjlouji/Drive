@@ -14,6 +14,9 @@ import Button from '@material-ui/core/Button';
 import Divider from '@material-ui/core/Divider';
 import { Dropdown, NavDropdown }  from 'react-bootstrap';
 import './styles.css';
+import PropTypes from 'prop-types';
+import { logout } from '../../../actions/auth'
+import { connect } from 'react-redux';
 
 const StyledMenu = withStyles({
   paper: {
@@ -38,7 +41,7 @@ const StyledMenu = withStyles({
 
 
 
-const useStyles = makeStyles(theme => ({
+const useStyles = (theme => ({
   root: {
     width: 350,
     height:   300,
@@ -115,61 +118,66 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export default function PrimarySearchAppBar() {
-  const classes = useStyles();
-  const [anchorEl, setAnchorEl] = React.useState(null);
 
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
+export  class Header extends React.Component {
+  static propTypes = {
+    auth: PropTypes.object.isRequired,
+    logout: PropTypes.func.isRequired,
   };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
-
-  const navDropdownTitle = (<Avatar aria-controls="customized-menu" aria-haspopup="true"  variant="contained" color="primary" style={{ height: '33px', width: '33px' }} >H</Avatar>);
-
-  return (
-    <div className={classes.grow}>
-      <AppBar style={{ background: 'transparent', boxShadow: 'none', borderBottom: '1px solid #e8e8e8',  position: "fixed"}}  position="fixed">
-        <Toolbar>
-          <Typography className={classes.title} variant="h5" noWrap>
-            Drive
-          </Typography>
-          <div className={classes.search}>
-            <div className={classes.searchIcon}>
-              <SearchIcon />
+  render() {
+    const { classes } = this.props;
+    const navDropdownTitle = (<Avatar aria-controls="customized-menu" aria-haspopup="true"  variant="contained" color="primary" style={{ height: '33px', width: '33px' }} > {this.props.auth.user.first_name.slice(0,1).toUpperCase()}</Avatar>);
+  
+    Header.propTypes = {
+      classes: PropTypes.object.isRequired,
+    };
+    return (
+      <div className={classes.grow}>
+        <AppBar style={{ background: 'transparent', boxShadow: 'none', borderBottom: '1px solid #e8e8e8',  position: "fixed"}}  position="fixed">
+          <Toolbar>
+            <Typography className={classes.title} variant="h5" noWrap>
+              Drive
+            </Typography>
+            <div className={classes.search}>
+              <div className={classes.searchIcon}>
+                <SearchIcon />
+              </div>
+              <InputBase
+                style={{ height: '100%', width: '100%', fontSize: '18px', fontWeight: '350' }}
+                placeholder="Search in Drive"
+                classes={{
+                  root: classes.inputRoot,
+                  input: classes.inputInput,
+                }}
+                inputProps={{ 'aria-label': 'Search in Drive' }}
+              />
             </div>
-            <InputBase
-              style={{ height: '100%', width: '100%', fontSize: '18px', fontWeight: '350' }}
-              placeholder="Search in Drive"
-              classes={{
-                root: classes.inputRoot,
-                input: classes.inputInput,
-              }}
-              inputProps={{ 'aria-label': 'Search in Drive' }}
-            />
-          </div>
-          <div className={classes.grow} />
-          <NavDropdown title={navDropdownTitle} style={{ textDecorationLine: "transparent", top: '3px' , boxShadow: '30px solid  #eeee' }}>
-                    <Card className={classes.root} style={{ background: 'transparent',  boxShadow: 'none', }}>
-                        <CardContent style={{ alignContent: 'center', justifyContent: 'center', display: 'flex' }}>
-                          <Avatar style={{ height: '80px',  width:  '80px'  }}>H</Avatar>
-                        </CardContent>
-                          <Typography style={{ color: '#333333',  fontSize: '16px' , fontFamily: 'Roboto', fontWeight:  '500', alignContent: 'center', justifyContent: 'center', display: 'flex'  }} variant="h6" noWrap>
-                            Joan Louji
-                          </Typography>     
-                          <Typography style={{ color: '#8c8c8c',  fontSize: '14px' , fontFamily: 'Roboto', fontWeight:  '100', alignContent: 'center', justifyContent: 'center', display: 'flex'  }} variant="h6" noWrap>
-                            sjlouji10@gmail.com
-                          </Typography> 
-                          <CardContent style={{ alignContent: 'center', justifyContent: 'center', display: 'flex', marginTop: '30px' }}>
-                            <Button variant="outlined" style={{ fontWeight: '400', outline: '0'  }}>Sign out of Drive</Button>             
-                          </CardContent> 
-                    </Card>
-          </NavDropdown>
-        </Toolbar>
-      </AppBar>
-    </div>
-  );
+            <div className={classes.grow} />
+            <NavDropdown title={navDropdownTitle} style={{ textDecorationLine: "transparent", top: '3px' , boxShadow: '30px solid  #eeee' }}>
+                      <Card className={classes.root} style={{ background: 'transparent',  boxShadow: 'none', }}>
+                          <CardContent style={{ alignContent: 'center', justifyContent: 'center', display: 'flex' }}>
+                            <Avatar style={{ height: '80px',  width:  '80px'  }}>{this.props.auth.user.first_name.slice(0,1).toUpperCase()}</Avatar>
+                          </CardContent>
+                            <Typography style={{ color: '#333333',  fontSize: '16px' , fontFamily: 'Roboto', fontWeight:  '500', alignContent: 'center', justifyContent: 'center', display: 'flex'  }} variant="h6" noWrap>
+                              {this.props.auth.user.first_name}   {this.props.auth.user.last_name}
+                            </Typography>     
+                            <Typography style={{ color: '#8c8c8c',  fontSize: '14px' , fontFamily: 'Roboto', fontWeight:  '100', alignContent: 'center', justifyContent: 'center', display: 'flex'  }} variant="h6" noWrap>
+                            {this.props.auth.user.email }
+                            </Typography> 
+                            <CardContent style={{ alignContent: 'center', justifyContent: 'center', display: 'flex', marginTop: '30px' }}>
+                              <Button onClick={this.props.logout} variant="outlined" style={{ fontWeight: '400', outline: '0'  }}>Sign out of Drive</Button>             
+                            </CardContent> 
+                      </Card>
+            </NavDropdown>
+          </Toolbar>
+        </AppBar>
+      </div>
+    );
+  }
 }
+
+const mapStateToProps = (state) => ({
+  auth: state.auth,
+});
+
+export default connect(mapStateToProps,  { logout })(withStyles(useStyles)(Header));
