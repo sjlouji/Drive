@@ -25,6 +25,11 @@ import FileCopyIcon from '@material-ui/icons/FileCopy';
 import './styles.css'
 import Button from '@material-ui/core/Button';
 import PlaylistAddOutlinedIcon from '@material-ui/icons/PlaylistAddOutlined';
+import  { Dropdown, DropdownButton } from 'react-bootstrap';
+import CloudUploadOutlinedIcon from '@material-ui/icons/CloudUploadOutlined';
+import FileCopyOutlinedIcon from '@material-ui/icons/FileCopyOutlined';
+import Card from '@material-ui/core/Card';
+import CreateNewFolderOutlinedIcon from '@material-ui/icons/CreateNewFolderOutlined';
 
 const categories = [
     {
@@ -99,13 +104,14 @@ const categories = [
 
 export default function ClippedDrawer() {
   const classes = styles();
+  const navDropdownTitle = (<h5 style={{ fontWeight: '300' }}><PlaylistAddOutlinedIcon  style={{ color: '' }}/>   New </h5>);
 
   return (
     <Drawer classes = {{ paper: classes.drawer }}  variant="permanent">
         {categories.map(({ id, children }) => (
             <React.Fragment key={id} className={classes.drawer}>
             <ListItem className={classes.categoryHeader} style={{ paddingLeft: '60px' }}>
-                <Button className={  classes.buttonCustom } variant="contained" size="large" style={{ backgroundColor: '#ffffff', outline: '0' }}><PlaylistAddOutlinedIcon  style={{ color: '' }}/>   New </Button>
+            
             </ListItem>
             {children.map(({ id: childId, to , icon }) => (
               <NavLink to={to} style={{ textDecoration: 'none' }} activeClassName={classes.active}>
